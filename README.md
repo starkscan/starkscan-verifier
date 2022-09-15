@@ -1,7 +1,7 @@
 <!-- logo -->
 <p align="center">
   <a href="https://starkscan.co">
-    <img width='440' src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/logo.svg">
+    <img width='320' src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/logo.svg">
   </a>
 </p>
 
@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img height="800" src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/demo.gif" alt="demo" />
+  <img width="200" src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/demo.gif" alt="demo" />
 </p>
 
 ## Why verify?
