@@ -1,12 +1,9 @@
 <!-- logo -->
 <p align="center">
   <a href="https://starkscan.co">
-    <img width='300' src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/logo.svg">
+    <img width='440' src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/logo.svg">
   </a>
 </p>
-
-<!-- tag line -->
-<h4 align='center'> <a href="https://starkscan.co">Starkscan</a> Contract Verifier.</h4>
 
 <!-- primary badges -->
 <p align="center">
@@ -28,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/demo.gif" alt="demo" />
+  <img height="800" src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/demo.gif" alt="demo" />
 </p>
 
 ## Why verify?
