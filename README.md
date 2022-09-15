@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img width="320" src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/demo.gif" alt="demo" />
+  <img width="360" src="https://raw.githubusercontent.com/starkscan/starkscan-verifier/main/docs/demo.gif" alt="demo" />
 </p>
 
 ## Why verify?
