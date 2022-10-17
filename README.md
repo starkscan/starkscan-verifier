@@ -71,7 +71,7 @@ starkscan
 
 Copyright (c) 2022 Diamond Paws Inc
 
-Licensed under the [MIT license](https://github.com/starkscan/starkscan-verifier/blob/main/LICENSE).
+Licensed under the [AGPL](https://github.com/starkscan/starkscan-verifier/blob/main/LICENSE) license.
 
 ## Website
 
