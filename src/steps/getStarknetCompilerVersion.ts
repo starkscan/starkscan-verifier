@@ -4,7 +4,7 @@ import searchList from "inquirer-search-list";
 
 export async function getStarknetCompilerVersion(): Promise<string> {
   const ui = new inquirer.ui.BottomBar();
-  ui.log.write("\n")
+  ui.log.write("\n");
 
   inquirer.registerPrompt("search-list", searchList);
 
@@ -13,7 +13,7 @@ export async function getStarknetCompilerVersion(): Promise<string> {
     type: "search-list",
     name: "StarknetCompilerVersion",
     message: "Compiler version:",
-    choices: ["0.10.0", "0.9.1", "0.9.0", "0.8.2", "0.8.1", "0.8.0"],
+    choices: ["0.10.1", "0.10.0", "0.9.1", "0.9.0", "0.8.2", "0.8.1", "0.8.0"],
   });
   return userInput.StarknetCompilerVersion;
 }

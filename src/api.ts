@@ -9,14 +9,14 @@ export function getStarkscanClassUrl({
   network: networkType;
 }): string {
   if (network === "mainnet") {
-    return `https://starkscan.co/class/${classHash}`;
+    return `https://starkscan.co/class/${classHash}#code`;
   }
-  return `https://testnet.starkscan.co/class/${classHash}`;
+  return `https://testnet.starkscan.co/class/${classHash}#code`;
 }
 interface HashDetailsRes {
   type: "class" | "contract";
   class_hash: string;
-  is_verified: boolean
+  is_verified: boolean;
 }
 export async function getHashDetails({
   hash,
@@ -64,24 +64,23 @@ export async function getJobStatus({
   return data;
 }
 
-
 export async function submitVerifyClass({
   sourceCode,
-  network
-} : {
-  sourceCode: SourceCode,
-  network: networkType,
+  network,
+}: {
+  sourceCode: SourceCode;
+  network: networkType;
 }): Promise<string> {
-  let url = "https://api-testnet.starkscan.co/api/verify_class"
+  let url = "https://api-testnet.starkscan.co/api/verify_class";
   if (network === "mainnet") {
-    url = "https://api.starkscan.co/api/verify_class"
+    url = "https://api.starkscan.co/api/verify_class";
   }
 
   try {
     const { data } = await axios.default.post(url, sourceCode);
-    return data.job_id
+    return data.job_id;
   } catch (err) {
-    console.log("[submitVerifyClass]", err)
-    throw err
+    console.log("[submitVerifyClass]", err);
+    throw err;
   }
 }
