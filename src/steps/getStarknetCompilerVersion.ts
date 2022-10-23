@@ -1,8 +1,9 @@
 import inquirer from "inquirer";
 // @ts-ignore
 import searchList from "inquirer-search-list";
+import { StarknetCompilerVersion } from "types.js";
 
-export async function getStarknetCompilerVersion(): Promise<string> {
+export async function getStarknetCompilerVersion(): Promise<StarknetCompilerVersion> {
   const ui = new inquirer.ui.BottomBar();
   ui.log.write("\n");
 

@@ -26,9 +26,9 @@ async function main() {
     ui.log.write(`🌟 Protostar users, please run protostar install.\n\n`);
 
     const mainCairoFile = await getMainCairoFile();
-    const files = await getFileTree(mainCairoFile);
-    const { classHash, networks } = await getClassHash();
     const compilerVersion = await getStarknetCompilerVersion();
+    const files = await getFileTree(mainCairoFile, compilerVersion);
+    const { classHash, networks } = await getClassHash();
     const isAccountContract = await getIsAccountContract(mainCairoFile);
     const contractName = await getContractName({
       defaultName: path.parse(mainCairoFile).name,

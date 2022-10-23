@@ -12,3 +12,6 @@ export type SourceCode = {
 }
 
 export type networkType = "mainnet" | "testnet"
+
+export type StarknetCompilerVersion = 
+  "0.10.1" | "0.10.0" | "0.9.1" | "0.9.0" | "0.8.2" | "0.8.1" |"0.8.0"

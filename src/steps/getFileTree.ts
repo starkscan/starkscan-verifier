@@ -4,13 +4,16 @@ import inquirer from "inquirer";
 import chalk from "chalk";
 import ora from "ora";
 
-import { Files } from "../types.js";
+import { Files, StarknetCompilerVersion } from "../types.js";
 import { getCairoPathsForNile, getCairoPathsForProtostar } from "../tools.js";
+import { STARKNET_STD_FILES } from "../starknetStdFiles.js";
 
 const IMPORT_REGEX = /^from\s(.*?)\simport/gm;
 const spinner = ora();
 
-export async function getFileTree(mainFilePath: string): Promise<Files> {
+export async function getFileTree(mainFilePath: string, compilerVersion: StarknetCompilerVersion): Promise<Files> {
+  const starknetStdFiles = STARKNET_STD_FILES[compilerVersion]
+
   const ui = new inquirer.ui.BottomBar();
   ui.log.write("\n")
 
@@ -27,6 +30,7 @@ export async function getFileTree(mainFilePath: string): Promise<Files> {
         mainFilePath: mainFilePath,
         shouldPromptUser: false,
         cairoPaths: cairoPaths,
+        starknetStdFiles: starknetStdFiles,
       });
       ui.log.write("\n")
       spinner.succeed(`All files found`);
@@ -49,6 +53,7 @@ export async function getFileTree(mainFilePath: string): Promise<Files> {
         mainFilePath: mainFilePath,
         shouldPromptUser: false,
         cairoPaths: cairoPaths,
+        starknetStdFiles: starknetStdFiles,
       });
       ui.log.write("\n")
       spinner.succeed(`All files found`);
@@ -64,6 +69,7 @@ export async function getFileTree(mainFilePath: string): Promise<Files> {
     mainFilePath: mainFilePath,
     shouldPromptUser: true,
     cairoPaths: [],
+    starknetStdFiles: starknetStdFiles,
   });
   ui.log.write("\n")
   spinner.succeed(`All files found`);
@@ -77,20 +83,24 @@ class FileTree {
   mainFilePathName: string;
   files: Files;
   cairoPaths: string[];
+  starknetStdFiles: string[];
 
   static async getFiles({
     mainFilePath,
     shouldPromptUser,
     cairoPaths,
+    starknetStdFiles
   }: {
     mainFilePath: string;
     shouldPromptUser: boolean;
     cairoPaths: string[];
+    starknetStdFiles: string[]
   }): Promise<Files> {
     const fileTree = new FileTree({
       mainFilePath: mainFilePath,
       shouldPromptUser: shouldPromptUser,
       cairoPaths: cairoPaths,
+      starknetStdFiles: starknetStdFiles,
     });
     await fileTree.populateFileTree();
     return fileTree.files;
@@ -100,15 +110,18 @@ class FileTree {
     mainFilePath,
     shouldPromptUser,
     cairoPaths,
+    starknetStdFiles
   }: {
     mainFilePath: string;
     shouldPromptUser: boolean;
     cairoPaths: string[];
+    starknetStdFiles: string[]
   }) {
     this.shouldPromptUser = shouldPromptUser;
     this.mainFilePathName = path.basename(mainFilePath);
     this.files = {};
     this.cairoPaths = [path.dirname(mainFilePath), ...cairoPaths];
+    this.starknetStdFiles = starknetStdFiles;
     spinner.start();
   }
 
@@ -146,12 +159,11 @@ class FileTree {
     // process each imported file
     for (let i = 0; i < importedFilesPath.length; i++) {
       const importedFilePath = importedFilesPath[i];
-      if (importedFilePath.startsWith("starkware")) {
-        // ignore starkware packages, should be included in cairo-lang
-        continue;
-      }
       const convertedFilePath =
         importedFilePath.split(".").join("/") + ".cairo";
+      if (this.starknetStdFiles.includes(convertedFilePath)) {
+        continue;
+      }
       await this._populateFileTree(convertedFilePath);
     }
   }
