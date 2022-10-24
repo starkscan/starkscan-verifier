@@ -1,11 +1,12 @@
 import { isString } from "class-validator";
 import inquirer from "inquirer";
+import checkbox from "@inquirer/checkbox";
+
 import * as starknet from "starknet";
 import ora from "ora";
 
 import { networkType } from "../types.js";
 import { getHashDetails, getStarkscanClassUrl } from "../api.js";
-
 
 function validateHash(input: string): string | boolean {
   if (!isString(input)) {
@@ -24,7 +25,7 @@ export async function getClassHash(): Promise<{
   networks: networkType[];
 }> {
   const ui = new inquirer.ui.BottomBar();
-  ui.log.write("\n")
+  ui.log.write("\n");
 
   const spinner = ora();
 
@@ -40,33 +41,39 @@ export async function getClassHash(): Promise<{
   const userInputHash = userInput.Hash;
 
   spinner.start("Looking for address on Testnet and Mainnet...");
-  const promises = []
-  promises.push(await getHashDetails({
-    hash: userInputHash,
-    network: "testnet",
-  }))
-  promises.push(await getHashDetails({
-    hash: userInputHash,
-    network: "mainnet",
-  }))
-  const hashDetails = await Promise.all(promises)
-  const hashDetailsTestnet = hashDetails[0]
-  const hashDetailsMainnet = hashDetails[1]
+  const promises = [];
+  promises.push(
+    await getHashDetails({
+      hash: userInputHash,
+      network: "testnet",
+    })
+  );
+  promises.push(
+    await getHashDetails({
+      hash: userInputHash,
+      network: "mainnet",
+    })
+  );
+  const hashDetails = await Promise.all(promises);
+  const hashDetailsTestnet = hashDetails[0];
+  const hashDetailsMainnet = hashDetails[1];
 
-  ui.log.write("\n")
+  ui.log.write("\n");
   const choices = [];
   if (hashDetailsTestnet) {
     if (hashDetailsTestnet.is_verified) {
       const starkscanUrl = getStarkscanClassUrl({
         classHash: hashDetailsTestnet.class_hash,
         network: "testnet",
-      })
-      spinner.info(`Already verified on Testnet: ${starkscanUrl}`)
+      });
+      spinner.info(`Already verified on Testnet: ${starkscanUrl}`);
     } else {
       if (hashDetailsTestnet.type === "class") {
         spinner.succeed("Found class hash on Testnet");
       } else if (hashDetailsTestnet.type === "contract") {
-        spinner.succeed(`Found contract address on Testnet, which implements class hash ${hashDetailsTestnet.class_hash}`);
+        spinner.succeed(
+          `Found contract address on Testnet, which implements class hash ${hashDetailsTestnet.class_hash}`
+        );
       }
       choices.push({
         name: "Testnet",
@@ -80,25 +87,27 @@ export async function getClassHash(): Promise<{
       const starkscanUrl = getStarkscanClassUrl({
         classHash: hashDetailsMainnet.class_hash,
         network: "mainnet",
-      })
-      spinner.info(`Already verified on Mainnet: ${starkscanUrl}`)
+      });
+      spinner.info(`Already verified on Mainnet: ${starkscanUrl}`);
     } else {
       if (hashDetailsMainnet.type === "class") {
         spinner.succeed("Found class hash on Mainnet");
       } else if (hashDetailsMainnet.type === "contract") {
-        spinner.succeed(`Found contract address on Mainnet, which implements class hash ${hashDetailsMainnet.class_hash}`);
+        spinner.succeed(
+          `Found contract address on Mainnet, which implements class hash ${hashDetailsMainnet.class_hash}`
+        );
       }
       choices.push({
         name: "Mainnet",
         value: "mainnet",
         checked: true,
-      });  
+      });
     }
   }
-  ui.log.write("\n")
+  ui.log.write("\n");
 
   if (!choices.length) {
-    process.exit(0)
+    process.exit(0);
   }
 
   const classHash =
@@ -113,16 +122,14 @@ export async function getClassHash(): Promise<{
   spinner.stop();
 
   // get hash from user
-  const userInputRes = await inquirer.prompt({
-    type: "checkbox",
-    name: "VerifyOnNetworks",
+  // Using checkbox from @inquirer/checkbox because of memory leak issue with inquirer: https://github.com/SBoudrias/Inquirer.js/issues/887
+  const userSelectedNetworks = await checkbox({
     message: "Select networks to verify",
     choices: choices,
   });
-  const userSelectedNetworks = userInputRes.VerifyOnNetworks;
 
   return {
     classHash: classHash,
-    networks: userSelectedNetworks,
+    networks: userSelectedNetworks as networkType[],
   };
 }
