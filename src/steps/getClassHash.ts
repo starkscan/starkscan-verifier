@@ -140,7 +140,7 @@ export async function getClassHash(): Promise<{
   }
 
   const classHash =
-    hashDetailsTestnet?.class_hash ?? hashDetailsMainnet?.class_hash;
+    hashDetailsTestnet?.class_hash ?? hashDetailsTestnet2?.class_hash ?? hashDetailsMainnet?.class_hash;
   if (!classHash) {
     spinner.fail(
       "Cannot find address on testnet, testnet-2 or mainnet. Please try again.\n"
