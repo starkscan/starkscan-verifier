@@ -1,6 +1,15 @@
 import axios from "axios";
 import { networkType, SourceCode } from "./types.js";
 
+function getStarkscanBaseUrl(network: networkType) {
+  if (network === "mainnet") {
+    return "https://api.starkscan.co/api"
+  } else if (network === "testnet-2") {
+    return "https://api-testnet-2.starkscan.co/api"
+  }
+  return "https://api-testnet.starkscan.co/api"
+}
+
 export function getStarkscanClassUrl({
   classHash,
   network,
@@ -10,6 +19,8 @@ export function getStarkscanClassUrl({
 }): string {
   if (network === "mainnet") {
     return `https://starkscan.co/class/${classHash}#code`;
+  } else if (network === "testnet-2") {
+    return `https://testnet-2.starkscan.co/class/${classHash}#code`;
   }
   return `https://testnet.starkscan.co/class/${classHash}#code`;
 }
@@ -25,10 +36,7 @@ export async function getHashDetails({
   hash: string;
   network: networkType;
 }): Promise<HashDetailsRes | null> {
-  let url = `https://api-testnet.starkscan.co/api/hash/${hash}`;
-  if (network === "mainnet") {
-    url = `https://api.starkscan.co/api/hash/${hash}`;
-  }
+  const url = `${getStarkscanBaseUrl(network)}/hash/${hash}`
 
   try {
     const { data } = await axios.default.get(url);
@@ -55,11 +63,7 @@ export async function getJobStatus({
   jobId: string;
   network: networkType;
 }): Promise<JobStatusRes> {
-  let url = `https://api-testnet.starkscan.co/api/verify_class_job_status/${jobId}`;
-  if (network === "mainnet") {
-    url = `https://api.starkscan.co/api/verify_class_job_status/${jobId}`;
-  }
-
+  const url = `${getStarkscanBaseUrl(network)}/verify_class_job_status/${jobId}`
   const { data } = await axios.default.get(url);
   return data;
 }
@@ -71,10 +75,7 @@ export async function submitVerifyClass({
   sourceCode: SourceCode;
   network: networkType;
 }): Promise<string> {
-  let url = "https://api-testnet.starkscan.co/api/verify_class";
-  if (network === "mainnet") {
-    url = "https://api.starkscan.co/api/verify_class";
-  }
+  const url = `${getStarkscanBaseUrl(network)}/verify_class`
 
   try {
     const { data } = await axios.default.post(url, sourceCode);

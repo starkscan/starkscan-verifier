@@ -40,23 +40,30 @@ export async function getClassHash(): Promise<{
   });
   const userInputHash = userInput.Hash;
 
-  spinner.start("Looking for address on Testnet and Mainnet...");
+  spinner.start("Looking for address on Testnet, Testnet-2 and Mainnet...");
   const promises = [];
   promises.push(
-    await getHashDetails({
+    getHashDetails({
       hash: userInputHash,
       network: "testnet",
     })
   );
   promises.push(
-    await getHashDetails({
+    getHashDetails({
+      hash: userInputHash,
+      network: "testnet-2",
+    })
+  );
+  promises.push(
+    getHashDetails({
       hash: userInputHash,
       network: "mainnet",
     })
   );
   const hashDetails = await Promise.all(promises);
   const hashDetailsTestnet = hashDetails[0];
-  const hashDetailsMainnet = hashDetails[1];
+  const hashDetailsTestnet2 = hashDetails[1];
+  const hashDetailsMainnet = hashDetails[2];
 
   ui.log.write("\n");
   const choices = [];
@@ -78,6 +85,28 @@ export async function getClassHash(): Promise<{
       choices.push({
         name: "Testnet",
         value: "testnet",
+        checked: true,
+      });
+    }
+  }
+  if (hashDetailsTestnet2) {
+    if (hashDetailsTestnet2.is_verified) {
+      const starkscanUrl = getStarkscanClassUrl({
+        classHash: hashDetailsTestnet2.class_hash,
+        network: "testnet-2",
+      });
+      spinner.info(`Already verified on Testnet-2: ${starkscanUrl}`);
+    } else {
+      if (hashDetailsTestnet2.type === "class") {
+        spinner.succeed("Found class hash on Testnet-2");
+      } else if (hashDetailsTestnet2.type === "contract") {
+        spinner.succeed(
+          `Found contract address on Testnet-2, which implements class hash ${hashDetailsTestnet2.class_hash}`
+        );
+      }
+      choices.push({
+        name: "Testnet-2",
+        value: "testnet-2",
         checked: true,
       });
     }
@@ -114,7 +143,7 @@ export async function getClassHash(): Promise<{
     hashDetailsTestnet?.class_hash ?? hashDetailsMainnet?.class_hash;
   if (!classHash) {
     spinner.fail(
-      "Cannot find address on testnet or mainnet. Please try again.\n"
+      "Cannot find address on testnet, testnet-2 or mainnet. Please try again.\n"
     );
     spinner.stop();
     return await getClassHash();
