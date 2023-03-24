@@ -7,9 +7,20 @@ export async function getCairoPathsForProtostar(): Promise<string[]> {
   if (fs.existsSync(PROTOSTAR_TOML)) {
     const tomlFile = fs.readFileSync(PROTOSTAR_TOML, "utf-8")
     const parsedTomlFile = TOML.parse(tomlFile) as any
-    const cairoPathsFromBuild = parsedTomlFile["protostar.build"]?.["cairo-path"] ?? []
-    const cairoPathsFromSharedCommandConfigs = parsedTomlFile["protostar.shared_command_configs"]?.["cairo-path"] ?? []
-    return [...cairoPathsFromBuild, ...cairoPathsFromSharedCommandConfigs]
+    const cairoPathsFromBuild =
+      parsedTomlFile["protostar.build"]?.["cairo-path"] ??
+      parsedTomlFile["build"]?.["cairo-path"] ??
+      []
+    const cairoPathsFromSharedCommandConfigs =
+      parsedTomlFile["protostar.shared_command_configs"]?.["cairo-path"] ??
+      parsedTomlFile["shared_command_configs"]?.["cairo-path"] ??
+      []
+    const cairoPathsFromProjectConfig = parsedTomlFile["project"]?.["cairo-path"] ?? []
+    return [
+      ...cairoPathsFromBuild,
+      ...cairoPathsFromSharedCommandConfigs,
+      ...cairoPathsFromProjectConfig
+    ]
   }
   return []
 }
